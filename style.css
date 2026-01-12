@@ -84,8 +84,6 @@ body {
   font-size: 11px;
   min-height: 40px;
 }
-/* === АНИМАЦИИ === */
-
 @keyframes hit {
   0% { transform: translateX(0); }
   50% { transform: translateX(20px); }
@@ -98,4 +96,21 @@ body {
 }
 
 @keyframes shake {
-  0%
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-3px, 2px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-3px, -2px); }
+  100% { transform: translate(0,0); }
+}
+
+.attack {
+  animation: hit 0.2s ease;
+}
+
+.damage {
+  animation: knockback 0.2s ease;
+}
+
+.shake {
+  animation: shake 0.25s;
+}
