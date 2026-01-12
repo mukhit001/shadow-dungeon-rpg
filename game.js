@@ -6,43 +6,20 @@ const hero = {
   atk: 12,
   def: 4,
   exp: 0,
-  nextExp: 100
+  nextExp: 100,
+  x: 180,
+  y: 100
 };
 
-// ================= ITEMS =================
-const items = {
-  common: [
-    { name: "🟦 Iron Sword", atk: 3 },
-    { name: "🟦 Leather Armor", def: 2 }
-  ],
-  epic: [
-    { name: "🟪 Shadow Blade", atk: 8 },
-    { name: "🟪 Dark Armor", def: 6 }
-  ],
-  legendary: [
-    { name: "🟨 Monarch Relic", atk: 15, def: 10 }
-  ]
-};
+const screen = document.getElementById("screen");
+const player = document.getElementById("player");
 
-// ================= MONSTER =================
-function monster() {
-  return {
-    hp: 30 + hero.level * 15,
-    atk: 6 + hero.level * 3
-  };
-}
-
-let enemy = monster();
-
-// ================= ELEMENTS =================
-const playerEl = document.getElementById("player");
-const monsterEl = document.getElementById("monster");
-const screenEl = document.getElementById("screen");
+let monsters = [];
 
 // ================= UI =================
 function updateUI() {
   document.getElementById("level").innerText =
-    `LVL ${hero.level}  ATK:${hero.atk} DEF:${hero.def}`;
+    `LVL ${hero.level} ATK:${hero.atk}`;
 
   document.getElementById("hp").style.width =
     (hero.hp / hero.maxHp * 100) + "%";
@@ -50,56 +27,82 @@ function updateUI() {
   document.getElementById("exp").style.width =
     (hero.exp / hero.nextExp * 100) + "%";
 
-  if (hero.level >= 5) {
+  if (hero.level >= 5)
     document.getElementById("spinBtn").style.display = "block";
-  }
 }
 
-function log(text) {
-  document.getElementById("log").innerText = text;
+function log(t) {
+  document.getElementById("log").innerText = t;
 }
 
-// ================= FIGHT =================
-function fight() {
+// ================= MOVEMENT =================
+function move(dir) {
+  const speed = 10;
+  if (dir === "up") hero.y -= speed;
+  if (dir === "down") hero.y += speed;
+  if (dir === "left") hero.x -= speed;
+  if (dir === "right") hero.x += speed;
 
-  // ---- АНИМАЦИЯ УДАРА ----
-  playerEl.classList.add("attack");
-  monsterEl.classList.add("damage");
-  screenEl.classList.add("shake");
+  hero.x = Math.max(0, Math.min(360, hero.x));
+  hero.y = Math.max(0, Math.min(130, hero.y));
 
-  setTimeout(() => {
-    playerEl.classList.remove("attack");
-    monsterEl.classList.remove("damage");
-    screenEl.classList.remove("shake");
-  }, 250);
+  player.style.left = hero.x + "px";
+  player.style.top = hero.y + "px";
+}
 
-  // ---- БОЙ ----
-  let dmgToEnemy = Math.max(hero.atk - 3, 1);
-  let dmgToHero = Math.max(enemy.atk - hero.def, 1);
+// ================= MONSTERS =================
+function spawnMonster() {
+  const type = Math.random();
+  let m = {
+    hp: 30,
+    x: Math.random() * 350,
+    y: Math.random() * 130,
+    type: "normal"
+  };
 
-  enemy.hp -= dmgToEnemy;
-  hero.hp -= dmgToHero;
-
-  if (hero.hp <= 0) {
-    hero.hp = hero.maxHp;
-    hero.exp = Math.max(hero.exp - 20, 0);
-    log("☠ Ты погиб и был возвращён");
-    enemy = monster();
-    updateUI();
-    return;
+  if (type > 0.7) {
+    m.type = "fast";
+    m.hp = 20;
+  } else if (type < 0.3) {
+    m.type = "tank";
+    m.hp = 50;
   }
 
-  if (enemy.hp <= 0) {
-    hero.exp += 40 + hero.level * 10;
-    log("⚔ Монстр повержен!");
+  const el = document.createElement("div");
+  el.className = `monster ${m.type}`;
+  el.style.left = m.x + "px";
+  el.style.top = m.y + "px";
+  screen.appendChild(el);
 
-    if (hero.exp >= hero.nextExp && hero.level < 10) {
-      levelUp();
+  m.el = el;
+  monsters.push(m);
+}
+
+spawnMonster();
+spawnMonster();
+
+// ================= ATTACK =================
+function attack() {
+  monsters.forEach((m, i) => {
+    const dx = hero.x - m.x;
+    const dy = hero.y - m.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 50) {
+      m.hp -= hero.atk;
+      log("⚔ Удар!");
+
+      if (m.hp <= 0) {
+        m.el.classList.add("dead");
+        setTimeout(() => m.el.remove(), 600);
+        monsters.splice(i, 1);
+        hero.exp += 40;
+        spawnMonster();
+      }
     }
+  });
 
-    enemy = monster();
-  }
-
+  if (hero.exp >= hero.nextExp) levelUp();
   updateUI();
 }
 
@@ -108,9 +111,8 @@ function levelUp() {
   hero.level++;
   hero.exp = 0;
   hero.nextExp += 80;
-  hero.maxHp += 25;
-  hero.atk += 6;
-  hero.def += 3;
+  hero.atk += 5;
+  hero.maxHp += 20;
   hero.hp = hero.maxHp;
   log("🔥 LEVEL UP!");
 }
@@ -118,29 +120,15 @@ function levelUp() {
 // ================= REST =================
 function rest() {
   hero.hp = hero.maxHp;
-  log("🛌 Отдых восстановил HP");
+  log("🛌 Отдых");
   updateUI();
 }
 
 // ================= SPIN =================
 function spin() {
-  let roll = Math.random() * 100;
-  let rarity;
-
-  if (roll < 65) rarity = "common";
-  else if (roll < 90) rarity = "epic";
-  else rarity = "legendary";
-
-  let drop = items[rarity][
-    Math.floor(Math.random() * items[rarity].length)
-  ];
-
-  if (drop.atk) hero.atk += drop.atk;
-  if (drop.def) hero.def += drop.def;
-
-  log(`🎰 Выпало: ${drop.name}!`);
+  hero.atk += 5;
+  log("🎰 Предмет усилил атаку!");
   updateUI();
 }
 
-// ================= START =================
 updateUI();
