@@ -16,14 +16,25 @@
   </div>
 
   <div id="screen">
-    <div id="player"></div>
-    <div id="monster"></div>
+    <div id="player">
+      <div class="weapon"></div>
+    </div>
   </div>
 
   <div id="controls">
-    <button onclick="fight()">⚔ ATTACK</button>
+    <button onclick="attack()">⚔ ATTACK</button>
     <button onclick="rest()">🛌 REST</button>
     <button onclick="spin()" id="spinBtn" style="display:none">🎰 SPIN</button>
+  </div>
+
+  <!-- Джойстик -->
+  <div id="joystick">
+    <button onclick="move('up')">⬆</button>
+    <div>
+      <button onclick="move('left')">⬅</button>
+      <button onclick="move('right')">➡</button>
+    </div>
+    <button onclick="move('down')">⬇</button>
   </div>
 
   <div id="log"></div>
