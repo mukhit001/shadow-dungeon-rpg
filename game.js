@@ -40,7 +40,8 @@ function move(dir) {
   const speed = 10;
   if (dir === "up") hero.y -= speed;
   if (dir === "down") hero.y += speed;
-  if (dir === "left") hero.x -= speed;
+//  if (dir === "left") hero.x -= speed;
+  if (dir === "left") hero.rotate(90);
   if (dir === "right") hero.x += speed;
 
   hero.x = Math.max(0, Math.min(360, hero.x));
