@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Shadow Dungeon RPG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game">
+
+  <div id="top-bar">
+    <span id="level"></span>
+    <div id="hp-bar"><div id="hp"></div></div>
+    <div id="exp-bar"><div id="exp"></div></div>
+  </div>
+
+  <div id="screen">
+    <div id="player"></div>
+    <div id="monster"></div>
+  </div>
+
+  <div id="controls">
+    <button onclick="fight()">⚔ ATTACK</button>
+    <button onclick="rest()">🛌 REST</button>
+    <button onclick="spin()" id="spinBtn" style="display:none">🎰 SPIN</button>
+  </div>
+
+  <div id="log"></div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
