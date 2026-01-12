@@ -1,3 +1,4 @@
+// ================= HERO =================
 const hero = {
   level: 1,
   hp: 100,
@@ -8,6 +9,7 @@ const hero = {
   nextExp: 100
 };
 
+// ================= ITEMS =================
 const items = {
   common: [
     { name: "🟦 Iron Sword", atk: 3 },
@@ -22,6 +24,7 @@ const items = {
   ]
 };
 
+// ================= MONSTER =================
 function monster() {
   return {
     hp: 30 + hero.level * 15,
@@ -31,6 +34,12 @@ function monster() {
 
 let enemy = monster();
 
+// ================= ELEMENTS =================
+const playerEl = document.getElementById("player");
+const monsterEl = document.getElementById("monster");
+const screenEl = document.getElementById("screen");
+
+// ================= UI =================
 function updateUI() {
   document.getElementById("level").innerText =
     `LVL ${hero.level}  ATK:${hero.atk} DEF:${hero.def}`;
@@ -50,7 +59,21 @@ function log(text) {
   document.getElementById("log").innerText = text;
 }
 
+// ================= FIGHT =================
 function fight() {
+
+  // ---- АНИМАЦИЯ УДАРА ----
+  playerEl.classList.add("attack");
+  monsterEl.classList.add("damage");
+  screenEl.classList.add("shake");
+
+  setTimeout(() => {
+    playerEl.classList.remove("attack");
+    monsterEl.classList.remove("damage");
+    screenEl.classList.remove("shake");
+  }, 250);
+
+  // ---- БОЙ ----
   let dmgToEnemy = Math.max(hero.atk - 3, 1);
   let dmgToHero = Math.max(enemy.atk - hero.def, 1);
 
@@ -80,6 +103,7 @@ function fight() {
   updateUI();
 }
 
+// ================= LEVEL UP =================
 function levelUp() {
   hero.level++;
   hero.exp = 0;
@@ -91,12 +115,14 @@ function levelUp() {
   log("🔥 LEVEL UP!");
 }
 
+// ================= REST =================
 function rest() {
   hero.hp = hero.maxHp;
   log("🛌 Отдых восстановил HP");
   updateUI();
 }
 
+// ================= SPIN =================
 function spin() {
   let roll = Math.random() * 100;
   let rarity;
@@ -116,4 +142,5 @@ function spin() {
   updateUI();
 }
 
+// ================= START =================
 updateUI();
