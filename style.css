@@ -84,3 +84,18 @@ body {
   font-size: 11px;
   min-height: 40px;
 }
+/* === АНИМАЦИИ === */
+
+@keyframes hit {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes knockback {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-15px); }
+}
+
+@keyframes shake {
+  0%
